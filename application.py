@@ -5,10 +5,12 @@
 from helpers import Log
 
 
-DNAME = "news"
-db = Log(DNAME)
+def main():
 
-status = db.badHttpStatus()
+    # connect to database
+    db = Log("news")
 
-for s in status:
-    print(s)
+    # TODO
+
+if __name__ == "__main__":
+    main()
