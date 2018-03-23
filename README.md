@@ -1,2 +1,2 @@
-# Logs-Analysis-Tool
+# Logs Analysis Tool
 Udacity project: A simple logs analysis tool in python
