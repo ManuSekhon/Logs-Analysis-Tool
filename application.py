@@ -1,4 +1,5 @@
-#!usr/bin/python3
+#!/usr/bin/env python3
+"""application.py."""
 
 # Internal reporting tool for Logs Analysis
 
@@ -6,7 +7,7 @@ from helpers import Log
 
 
 def main():
-
+    """Format the output for display."""
     # connect to database
     db = Log("news")
 
@@ -30,9 +31,10 @@ def main():
     # format errors for output
     print("\nMore than 1 percent of requests failed")
     for date, percent in errors:
-        print("{} -- {}% errors".format(date, round(percent, 3)))
+        print("{} -- {}% errors".format(date, round(percent, 2)))
 
     print("")
+
 
 if __name__ == "__main__":
     main()

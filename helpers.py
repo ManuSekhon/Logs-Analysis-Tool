@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+"""helpers.py."""
+
 import psycopg2
 import atexit
 
@@ -5,11 +8,12 @@ import atexit
 class Log:
     """
     This class defines necessary methods to search news database.
+
     Database name is passed as an argument to object.
     """
 
     def __init__(self, database):
-
+        """Initialize the object by connecting to database."""
         # create connection to database
         self.conn = psycopg2.connect(database=database)
         self.cursor = self.conn.cursor()
@@ -18,15 +22,14 @@ class Log:
         atexit.register(self.closeDatabase)
 
     def top_articles(self, count):
-        """Returns most viewed articles"""
-
+        """Return most viewed articles."""
         try:
             # join tables with SQL like
             # https://stackoverflow.com/a/12785938
             self.cursor.execute("""SELECT articles.title, COUNT(*)
                                 FROM articles
                                 JOIN log ON
-                                    log.path LIKE '%' || articles.slug || '%'
+                                    log.path LIKE '%' || articles.slug
                                 GROUP BY articles.title ORDER BY COUNT(*) DESC
                                 LIMIT {}
                                 """.format(count))
@@ -35,17 +38,16 @@ class Log:
             articles = self.cursor.fetchall()
             return articles
 
-        except:
-            raise RuntimeError("Could not get articles")
+        except psycopg2.Error as e:
+            raise RuntimeError("Could not get articles: {}".format(e))
 
     def top_authors(self):
-        """Returns list of most popular authors"""
-
+        """Return list of most popular authors."""
         try:
             self.cursor.execute("""SELECT authors.name, COUNT(*)
                                 FROM log
                                 JOIN articles ON
-                                    log.path LIKE '%' || articles.slug || '%'
+                                    log.path LIKE '%' || articles.slug
                                 JOIN authors ON
                                     authors.id = articles.author
                                 GROUP BY authors.name ORDER BY COUNT(*) DESC
@@ -54,12 +56,11 @@ class Log:
             authors = self.cursor.fetchall()
             return authors
 
-        except:
-            raise RuntimeError("Could not get authors")
+        except psycopg2.Error as e:
+            raise RuntimeError("Could not get authors: {}".format(e))
 
     def badHttpStatus(self):
-        """Returns the date and percentage when more than 1% requests failed"""
-
+        """Return the date and percentage when more than 1% requests failed."""
         try:
             self.cursor.execute("""SELECT t1.date, (t2.error * 100.0) / t1.total
                                 FROM
@@ -80,10 +81,10 @@ class Log:
             status = self.cursor.fetchall()
             return status
 
-        except:
-            raise RuntimeError("Could not set status info")
+        except psycopg2.Error as e:
+            raise RuntimeError("Could not set status info: {}".format(e))
 
     def closeDatabase(self):
-        # close datebase
+        """Close connection to database."""
         self.cursor.close()
         self.conn.close()
